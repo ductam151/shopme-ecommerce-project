@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+    <script type="text/javascript" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+    <title>Manage User | Create New User</title>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="text-sm-center">
+        <h2 th:text="'Manage User | ' + ${title}"></h2>
+    </div>
+    <form style="max-width: 800px; margin:0 auto" method="post" th:action="@{/users/new}" th:object="${user}"
+          onsubmit="return checkEmailUnique(this);" enctype="multipart/form-data">
+        <input type="hidden" th:field="*{id}" th:value="*{id}">
+        <div class="border border-secondary rounded p-3">
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">E-mail</label>
+                <input th:field="*{email}" class="col-sm-8" type="email" th:value="*{email}">
+                <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
+                      style="color:red; font-weight: bold"></span>
+                <span th:if="${emailTakenError != null}" th:field="${emailTakenError}" class="text-danger">
+                    [[${emailTakenError}]]
+                </span>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">First Name</label>
+                <input class="col-sm-8" type="text" th:field="*{firstName}" th:value="*{firstName}">
+                <span th:if="${#fields.hasErrors('firstName')}" th:errors="*{'firstName'}"></span>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Last Name</label>
+                <input class="col-sm-8" type="text" th:field="*{lastName}" th:value="*{lastName}">
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Password</label>
+                <input th:if="*{id != null}" class="col-sm-8" type="password" th:field="*{password}"
+                       placeholder="Leave blank if you dont want to change your password">
+                <input th:if="*{id == null}" class="col-sm-8" type="password" th:field="*{password}" required
+                       minlength="6">
+                <span th:if="${passwordError != null}" th:text="${passwordError}" class="text-danger font-weight-bold">
+                ></span>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Roles</label>
+                <div class="col col-sm-8">
+                    <th:block th:each="role : ${rolesList}">
+                        <input type="checkbox" th:field="*{roles}"
+                               th:value="${role.getId()}" th:text="${role.name}" class="m-2"> -
+                        <small>[[${role.description}]]</small>
+                        <br/>
+                    </th:block>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Photo</label>
+                <div class="col-sm-8">
+                    <input id="fileImage" name="image" type="file" accept="image/jpeg, image/png" class="mb-2">
+                    <img id="userPhoto" th:value="*{photo}" class="img-fluid"
+                         alt="User photo">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Enabled</label>
+                <div class="col col-sm-8">
+                    <input type="checkbox" th:field="*{enabled}" th:value="*{enabled}">
+                </div>
+            </div>
+            <div class="text-center">
+                <input type="submit" value="Save" class="btn btn-primary">
+                <a th:href="@{/users}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </form>
+    <div class="modal fade text-center" id="modalDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modalTitle">Warning</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <span id="modalBody"></span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function checkEmailUnique(form) {
+        url = "[[@{/api/users/check_email}]]";
+        userEmail = document.getElementById('email').value;
+        userId = document.getElementById('id').value;
+        csrfValue = document.getElementsByName('_csrf')[0].value;
+        params = {id: userId, email: userEmail, _csrf: csrfValue};
+        console.log(params);
+        $.post(url, params, function (response) {
+            if (response == "OK") {
+                form.submit();
+            } else if (response == "Duplicated") {
+                showModalDialog("Warning", "There is another user having the email " + userEmail);
+            } else {
+                showModalDialog("Error", "Unknown response from the server");
+            }
+        }).fail(function (response) {
+                showModalDialog("Error", "Could not connect to server");
+                console.log(response);
+            }
+        );
+        return false;
+    }
+
+    $("#fileImage").change(function () {
+        let fileSize = this.files[0].size;
+        if (fileSize > 1048576) {
+            this.setCustomValidity("You must choose avatar less than 1MB!");
+            this.reportValidity();
+        } else {
+            this.setCustomValidity("");
+            showImageThumbnail(this);
+        }
+    });
+
+    function showImageThumbnail(fileInput) {
+        var file = fileInput.files[0];
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            $("#userPhoto").attr("src", e.target.result);
+        };
+        reader.readAsDataURL(file);
+    }
+
+
+    photoName = document.getElementById('userPhoto').getAttribute('value');
+    //url = "[[@{/api/users/photo/}]]" + photoName; take more time cauze need to get jwt token
+    if (photoName == '') {
+        photoName = 'default_avatar.jpg';
+    }
+    url = "https://kutamhahaha6915012002-sgu.sirv.com/Shopme/avatar/" + photoName + `?w=150&h=150&v=` + Date.now();
+    $('#userPhoto').attr('src', url);
+    $('#userPhoto').attr('width', 162);
+    $('#userPhoto').attr('height', 180);
+
+    function showModalDialog(title, message) {
+        $("#modalTitle").text(title);
+        $("#modalBody").text(message);
+        $("#modalDialog").modal();
+    }
+</script>
+</body>
+</html>
