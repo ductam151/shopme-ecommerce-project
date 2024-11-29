@@ -1,14 +1,23 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Fragment</title>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+>
+<head th:fragment="page_head(page_title)">
+    <meta http-equiv="Content-Type" content="text/html; chartset=UTF-8">
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; minimum-scale=1.0">
+    <title>[[${page_title}]]</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/fontawesome/all.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/style.css}">
+    <script type="text/javascript" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
 </head>
 <body>
-<th th:fragment="column_link(fieldName, label)">
 
+
+<th th:fragment="column_link(label,fieldName, label, removeTag)" th:remove="${removeTag}">
     <a class="text-white"
-       th:href="@{'/users/page/' + ${currentPage} + '?sortField='+${fieldName}+'&sortDir=' + ${sortField != fieldName ? sortDir : reverseDir}  + ${keyword != null ? '&keyword=' + keyword : ''}}">
+       th:href="@{'/' + ${label} + '/page/' + ${currentPage} + '?sortField='+${fieldName}+'&sortDir=' + ${sortField != fieldName ? sortDir : reverseDir}  + ${keyword != null ? '&keyword=' + keyword : ''}}">
         [[${label}]]
     </a>
     <span th:if="${sortField == fieldName}"
@@ -19,6 +28,11 @@
    th:href="@{'/users/page/' + ${pageNum}+ '?'+ ${sortField != null ? '&sortField=' + sortField : ''} + ${sortDir != null ? '&sortDir=' + sortDir : '' } +${keyword != null ? '&keyword=' + keyword : ''}}">[[${placeHolder}]]</a>
 </a>
 
-<a th:fragment="user_export(type, label)" th:href="@{'/users/export/' + ${type} + ${keyword != null ? '?keyword=' + keyword : ''}}">[[${label}]]</a>
+<a th:fragment="user_export(type, label)" th:class="${'fas fa-file-' +type + ' fa-2x icon-gray mr-2' }"
+   th:href="@{'/users/export/' + ${type} + ${keyword != null ? '?keyword=' + keyword : ''}}">[[${label}]]</a>
+
+<div th:fragment="footer" class="text-center footer m-3">
+    <p>Shopme Control Panel - Copyright &copy; Shopme</p>
+</div>
 </body>
 </html>

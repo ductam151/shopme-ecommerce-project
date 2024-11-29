@@ -1,6 +1,6 @@
 package dev.nhoxtam151.admin;
 
-import dev.nhoxtam151.admin.models.User;
+import dev.nhoxtam151.shopmecommon.models.User;
 import dev.nhoxtam151.admin.repositories.UserRepository;
 import dev.nhoxtam151.shopmecommon.models.Role;
 import org.junit.jupiter.api.DisplayName;
@@ -105,7 +105,7 @@ public class UserRepositoryTest {
         roles.remove(new Role(5L));
 //        roles.remove(new Role(2L));
 //        roles.remove(new Role(4L));
-        roles.add(new Role(1L));
+        //roles.add(new Role(1L));
         userRepository.save(user);
         System.out.println("save = " + user);
     }

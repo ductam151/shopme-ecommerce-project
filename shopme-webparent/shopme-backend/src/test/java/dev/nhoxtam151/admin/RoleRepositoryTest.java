@@ -27,8 +27,8 @@ public class RoleRepositoryTest {
     @DisplayName("insertRoleTest")
     public void test1() {
         Role role = new Role();
-        role.setName(Role.RoleType.TESTER);
-        role.setDescription("manage everything");
+        role.setName(Role.RoleType.USER);
+        role.setDescription("app user");
         Role save = repository.save(role);
         System.out.println("save = " + save);
         assertNotNull(save);

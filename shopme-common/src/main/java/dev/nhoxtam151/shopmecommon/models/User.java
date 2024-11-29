@@ -1,6 +1,5 @@
-package dev.nhoxtam151.admin.models;
+package dev.nhoxtam151.shopmecommon.models;
 
-import dev.nhoxtam151.shopmecommon.models.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -25,9 +24,9 @@ public class User {
     private String lastName;
     @Column(length = 64, nullable = false)
     private String password;
-    @Column(length = 64)
+    @Column(length = 255)
     private String photo;
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -39,6 +38,15 @@ public class User {
     public User() {
     }
 
+    public User(String email, String firstName, String lastName, String photo, List<Role> roles) {
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.photo = photo;
+        this.roles = roles;
+        this.enabled = true;
+    }
+
     public User(String email, String firstName, String lastName, String password) {
         this.email = email;
         this.firstName = firstName;
@@ -46,12 +54,11 @@ public class User {
         this.password = password;
     }
 
-    public User(String email, String firstName, String lastName, String password, List<Role> roles) {
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.password = password;
-        this.roles = roles;
+
+
+    @Transient
+    public String getFullName() {
+        return firstName + " " + lastName;
     }
 
     public Long getId() {

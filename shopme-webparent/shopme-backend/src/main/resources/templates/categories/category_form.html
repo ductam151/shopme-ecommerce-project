@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+1
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: page_head(${pageTitle})"></head>
+<body>
+<div class="container-fluid">
+    <div class="text-sm-center">
+        <h2 th:text="'Manage User | ' + ${pageTitle}"></h2>
+    </div>
+    <form style="max-width: 800px; margin:0 auto" method="post" th:action="@{/categories/save}" th:object="${category}"
+          enctype="multipart/form-data">
+        <input type="hidden" th:field="*{id}" th:value="*{id}">
+        <div class="border border-secondary rounded p-3">
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Category Name:</label>
+                <input th:field="*{name}" class="col-sm-8" th:value="*{name}">
+                <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
+                      style="color:red; font-weight: bold"></span>
+                <span th:if="${nameError != null}" th:field="${nameError}" class="text-danger">
+                    [[${nameError}]]
+                </span>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Alias:</label>
+                <input class="col-sm-8" th:field="*{alias}"
+                       minlength="6">
+                <span th:if="${aliasError != null}" th:text="${aliasError}" class="text-danger font-weight-bold">
+                ></span>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Photo:</label>
+                <div class="col-sm-8">
+                    <input id="fileImage" name="image" type="file" accept="image/jpeg, image/png" class="mb-2">
+                    <img id="categoryPhoto" th:value="*{photo}" class="img-fluid"
+                         alt="Category photo">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Enabled:</label>
+                <div class="col col-sm-8">
+                    <input type="checkbox" th:field="*{enabled}" th:value="*{enabled}">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Parent Category:</label>
+                <div class="col col-sm-8">
+                    <select th:field="*{parent}">
+                        <option value="0">[No parent]</option>
+                        <th:block>
+                            <option th:each="parent : ${parentCategories}" th:value="${parent.id}">[[${parent.name}]]</option>
+                        </th:block>
+                    </select>
+                </div>
+            </div>
+            <div class="text-center">
+                <input type="submit" value="Save" class="btn btn-primary">
+                <a th:href="@{/categories}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </form>
+    <div class="modal fade text-center" id="modalDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modalTitle">Warning</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <span id="modalBody"></span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#fileImage").change(function () {
+        let fileSize = this.files[0].size;
+        if (fileSize > 1048576) {
+            this.setCustomValidity("You must choose avatar less than 1MB!");
+            this.reportValidity();
+        } else {
+            this.setCustomValidity("");
+            showImageThumbnail(this);
+        }
+    });
+
+    function showImageThumbnail(fileInput) {
+        var file = fileInput.files[0];
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            $("#userPhoto").attr("src", e.target.result);
+        };
+        reader.readAsDataURL(file);
+    }
+
+
+    photoName = document.getElementById('userPhoto').getAttribute('value');
+    //url = "[[@{/api/users/photo/}]]" + photoName; take more time cauze need to get jwt token
+    if (photoName == '') {
+        photoName = 'default_category.jpg';
+    }
+    url = "https://kutamhahaha6915012002-sgu.sirv.com/Shopme/avatar/" + photoName + `?w=150&h=150&v=` + Date.now();
+    $('#categoryPhoto').attr('src', url);
+    $('#categoryPhoto').attr('width', 162);
+    $('#categoryPhoto').attr('height', 180);
+
+    function showModalDialog(title, message) {
+        $("#modalTitle").text(title);
+        $("#modalBody").text(message);
+        $("#modalDialog").modal();
+    }
+</script>
+</body>
+</html>

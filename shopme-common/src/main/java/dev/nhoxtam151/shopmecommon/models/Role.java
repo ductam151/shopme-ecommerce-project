@@ -67,6 +67,6 @@ public class Role {
     }
 
     public enum RoleType {
-        ADMIN, SALESPERSON, EDITOR, SHIPPER, ASSISTANT, TESTER;
+        ADMIN, SALESPERSON, EDITOR, SHIPPER, ASSISTANT, TESTER, USER;
     }
 }

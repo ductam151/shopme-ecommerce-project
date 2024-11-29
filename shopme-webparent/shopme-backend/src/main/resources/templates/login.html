@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+    <title>Login - Shopme Admin</title>
+
+</head>
+<body>
+
+<div class="container-fluid text-center">
+    <div class="m-4">
+        <img th:src="@{/images/ShopmeAdminSmall.png}" alt="Shopme Image">
+    </div>
+    <div>
+        <div th:if="${param.logout}">
+            <p class="text-warning">You have been logged out.</p>
+        </div>
+        <div th:if="${param.error}">
+            <p class="text-danger">[[${session.SPRING_SECURITY_LAST_EXCEPTION_MESSAGE}]]</p>
+        </div>
+        <form th:object="${loginUserDTO}" method="post" th:action="@{/login}"
+              style="max-width: 350px; margin: 0 auto">
+
+            <div class="border border-secondary rounded p-3">
+                <p>Access to Shopme Control Panel</p>
+                <div th:if="${param.error}" class="alert alert-error">
+                    Invalid username and password.
+                </div>
+                <p>
+                    <input placeholder="E-mail" class="form-control" th:field="*{email}">
+                </p>
+                <p>
+                    <input placeholder="Password" class="form-control" type="password" th:field="*{password}" required
+                           minlength="6">
+                </p>
+                <p>
+                    <input type="checkbox" name="remember-me">&nbsp;Remember Me
+                </p>
+                <p>
+                    <button class="btn btn-primary">Login</button>
+                </p>
+            </div>
+        </form>
+    </div>
+    <a class="btn btn-primary m-3" th:href="@{/oauth2/authorization/google}">Login with Google</a>
+    <div th:replace="fragments :: footer"></div>
+</div>
+</body>
+</html>

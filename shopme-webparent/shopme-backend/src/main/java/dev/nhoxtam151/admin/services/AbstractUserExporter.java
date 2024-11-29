@@ -1,6 +1,6 @@
 package dev.nhoxtam151.admin.services;
 
-import dev.nhoxtam151.admin.models.User;
+import dev.nhoxtam151.shopmecommon.models.User;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
@@ -19,7 +19,8 @@ public abstract class AbstractUserExporter implements UserExporter {
 
     public enum ExtensionType {
         xlsx(".xlsx"),
-        csv(".csv");
+        csv(".csv"),
+        pdf(".pdf");
         private String text;
 
         ExtensionType(String s) {

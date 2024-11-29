@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymleaf.org">
+<head th:replace="fragments :: page_head('Categories - Shopme Admin')"></head>
+<body>
+<div th:replace="navigation :: menu"></div>
+<div class="text-lg-center">
+    <h2>Categories</h2>
+    <a th:href="@{/categories/new}" class="fas fa-user-plus fa-2x icon-gray"></a>
+    <a th:replace="fragments :: user_export('csv', '')"></a>
+</div>
+<div th:if="${successMessage}" class="alert alert-success text-center">
+    [[${successMessage}]]
+</div>
+<div th:if="${errorMessage}" class="alert alert-danger text-center">
+    [[${errorMessage}]]
+</div>
+<div>
+    <form th:action="@{'/categories/page/1' + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}"
+          class="form-inline m-3">
+        Filter: &nbsp;
+        <input type="search" name="keyword" class="form-control" th:value="${keyword}" required/>
+        &nbsp;&nbsp;
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-search"></i>
+        </button>
+        &nbsp; &nbsp;
+        <button type="button" class="btn btn-secondary" onclick="clearFilter()">
+            <i class="fas fa-eraser"></i>
+        </button>
+        <input type="hidden" name="sortField" th:value="${sortField}">
+        <input type="hidden" name="sortDir" th:value="${sortDir}">
+    </form>
+</div>
+<div class="full-details">
+    <table class="table table-hover table-striped table-bordered table-responsive-xl full-details">
+        <thead class="thead-dark">
+        <tr>
+            <th class="hideable-column">
+            <th th:replace="fragments :: column_link('categories','id', 'ID','tag')"></th>
+            </th>
+            <th>Category Image</th>
+            <th class="hideable-column">
+            <th th:replace="fragments :: column_link('categories','name', 'Category Name', 'tag')"></th>
+            </th>
+            <th th:replace="fragments :: column_link('categories','alias', 'Alias', 'none')"></th>
+            <th th:replace="fragments :: column_link('categories','enabled', 'Enabled', 'none')"></th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="category : ${categories}">
+            <td class="hideable-column">[[${category.id}]]</td>
+            <td class="text-center">
+<!--                <img th:if="${user.photo == 'default_avatar.jpg'}"-->
+<!--                     th:src="@{'https://kutamhahaha6915012002-sgu.sirv.com/Shopme/avatar/default_avatar.jpg?w=80&h=80&v=' + ${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}}">-->
+<!--                <img  th:if="${user.photo != null and not #strings.contains(user.photo, 'googleusercontent.com')}"-->
+<!--                      th:src="@{'https://kutamhahaha6915012002-sgu.sirv.com/Shopme/avatar/'+ ${user.photo} +'?w=80&h=80&v=' + ${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}}">-->
+<!--                <img th:if="${#strings.contains(user.photo,'googleusercontent.com')}"-->
+<!--                     th:src="${user.photo}">-->
+            </td>
+            <td class="hideable-column">[[${category.name}]]</td>
+            <td>[[${category.alias}]]</td>
+            <td>
+                <a th:if="${category.enabled == true}" th:href="@{'/categories/' + ${category.id} + '/enabled/false'}"
+                   class="fas fa-check-circle fa-2x icon-green" title="Disable this category"></a>
+                <a th:if="${category.enabled == false}" th:href="@{'/categories/' + ${category.id} + '/enabled/true'}"
+                   class="fas fa-circle fa-2x icon-dark text-dark" title="Enable this category"></a>
+            </td>
+            <td><a th:href="@{'/categories/edit/' + ${category.id}}" class="fas fa-edit fa-2x icon-green"
+                   title="Update this category"></a>
+                &nbsp;
+<!--                <a th:href="@{'/categories/delete/' + ${category.id}}" th:userId="${category.id}"-->
+<!--                   th:username="${category.firstName} + ' ' + ${user.lastName}"-->
+<!--                   class="text-dark fas fa-trash fa-2x icon-dark link-delete" title="Delete this category"></a> !-->
+        </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="less-details">
+    <div th:each="category : ${categories}" class="row m-1">
+        <div class="col-4">
+<!--            <img th:if="${user.photo == 'default_avatar.jpg'}"-->
+<!--                 th:src="@{'https://kutamhahaha6915012002-sgu.sirv.com/Shopme/avatar/default_avatar.jpg?w=80&h=80&v=' + ${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}}">-->
+<!--            <img th:if="${user.photo != null and not #strings.contains(user.photo,'googleusercontent.com')}"-->
+<!--                 th:src="@{'https://kutamhahaha6915012002-sgu.sirv.com/Shopme/avatar/'+ ${user.photo} +'?w=80&h=80&v=' + ${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}}">-->
+<!--            <img th:if="${#strings.contains(user.photo,'googleusercontent.com')}" th:src="${user.photo}">-->
+        </div>
+        <div class="col-8">
+            <div>[[${category.name}]]</div>
+            <div>[[${category.alias}]]</div>
+            <div class="mt-2">
+<!--                <a th:if="${category.enabled == true}" th:href="@{'/categories/' + ${category.id} + '/enabled/false'}"-->
+<!--                   class="fas fa-check-circle fa-2x icon-green" title="Disable this category"></a>-->
+<!--                <a th:if="${category.enabled == false}" th:href="@{'/categories/' + ${category.id} + '/enabled/true'}"-->
+<!--                   class="fas fa-circle fa-2x icon-dark text-dark" title="Enable this category"></a>-->
+<!--                &nbsp;-->
+<!--                <a th:href="@{'/categories/edit/' + ${category.id}}" class="fas fa-edit fa-2x icon-green"-->
+<!--                   title="Update this category"></a>-->
+<!--                &nbsp;-->
+<!--                <a th:href="@{'/categories/delete/' + ${category.id}}" th:categoryId="${category.id}"-->
+<!--                   th:categoryname="${category.firstName} + ' ' + ${category.lastName}"-->
+<!--                   class="text-dark fas fa-trash fa-2x icon-dark link-delete" title="Delete this category"></a>-->
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

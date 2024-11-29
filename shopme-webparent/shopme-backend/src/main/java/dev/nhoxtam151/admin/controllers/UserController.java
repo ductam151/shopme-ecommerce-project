@@ -1,20 +1,18 @@
 package dev.nhoxtam151.admin.controllers;
 
 import dev.nhoxtam151.admin.exceptions.UserNotFoundException;
-import dev.nhoxtam151.admin.models.User;
+import dev.nhoxtam151.shopmecommon.models.User;
 import dev.nhoxtam151.admin.repositories.RoleRepository;
-import dev.nhoxtam151.admin.services.UserExporter;
 import dev.nhoxtam151.admin.services.UserService;
+import dev.nhoxtam151.admin.utils.UserUtils;
 import dev.nhoxtam151.shopmecommon.models.Role;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -34,11 +32,18 @@ public class UserController {
     private final int PAGE_SIZE = 4;
     private final UserService userService;
     private final RoleRepository roleRepository;
+    private final UserUtils userUtils;
     private Logger log = LoggerFactory.getLogger(UserController.class);
 
-    public UserController(UserService userService, RoleRepository roleRepository) {
+    public UserController(UserService userService, RoleRepository roleRepository, UserUtils userUtils) {
         this.userService = userService;
         this.roleRepository = roleRepository;
+        this.userUtils = userUtils;
+    }
+
+    @ModelAttribute(name = "username")
+    public String username(Authentication authentication) {
+        return userUtils.getUsername() == null ? "" : userUtils.getUsername();
     }
 
     @ModelAttribute(name = "rolesList")
@@ -48,13 +53,13 @@ public class UserController {
 
 
     @GetMapping
-    public String showUsersPage(Model model, HttpServletRequest request, HttpServletResponse response) {
+    public String showUsersPage(HttpServletResponse response, Model model) {
         response.setHeader("Pragma-directive", "no-cache");
         response.setHeader("Cache-directive", " no-cache");
         response.setHeader("Cache-control", " no-cache");
         response.setHeader("Pragma", " no-cache");
         response.setHeader("Expires", " 0");
-        return "redirect:/users/page/1";
+        return listByPage(1, "id", "asc", null, model);
     }
 
     @PostMapping("/new")
@@ -185,7 +190,8 @@ public class UserController {
         model.addAttribute("reverseDir", reverseDir);
         model.addAttribute("keyword", keyword);
         log.info("Keyword: {}", keyword);
-        return "users";
+        log.info("Username: {}", model.getAttribute("username"));
+        return "user_page";
     }
 
     @GetMapping("/export/csv")
@@ -198,5 +204,9 @@ public class UserController {
         userService.exportToExcel(keyword, response);
     }
 
+    @GetMapping("/export/pdf")
+    public void exportToPdf(@RequestParam(required = false, defaultValue = "") String keyword, HttpServletResponse response) throws IOException {
+        userService.exportToPdf(response);
+    }
 
 }

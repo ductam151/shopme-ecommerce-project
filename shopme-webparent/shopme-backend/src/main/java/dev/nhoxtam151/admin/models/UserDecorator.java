@@ -1,5 +1,6 @@
 package dev.nhoxtam151.admin.models;
 
+import dev.nhoxtam151.shopmecommon.models.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,10 +28,18 @@ public class UserDecorator implements UserDetails {
     @Override
     public String getUsername() {
         return user.getEmail();
+
     }
 
     @Override
     public boolean isEnabled() {
         return user.getEnabled();
     }
+
+
+    public String getFullName() {
+        return user.getFullName();
+        //return user.getFirstName() + " " + user.getLastName();
+    }
+
 }

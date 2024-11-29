@@ -1,18 +1,13 @@
 package dev.nhoxtam151.admin.services;
 
-import dev.nhoxtam151.admin.models.User;
+import dev.nhoxtam151.shopmecommon.models.User;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 @Component
 public class UserCSVExporter extends AbstractUserExporter implements UserExporter {

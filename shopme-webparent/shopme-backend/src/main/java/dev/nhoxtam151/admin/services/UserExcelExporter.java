@@ -1,6 +1,6 @@
 package dev.nhoxtam151.admin.services;
 
-import dev.nhoxtam151.admin.models.User;
+import dev.nhoxtam151.shopmecommon.models.User;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.xssf.usermodel.*;
