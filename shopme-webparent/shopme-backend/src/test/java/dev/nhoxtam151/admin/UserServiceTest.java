@@ -52,14 +52,6 @@ public class UserServiceTest {
     }
 
     @Test
-    @DisplayName("userServiceRetrieve")
-    public void test2() throws JsonProcessingException {
-        String token = userService.retrieveToken();
-        System.out.println("token = " + token);
-        assert (token != null);
-    }
-
-    @Test
     @DisplayName("testRetrieveImageFailed")
     public void test() throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();

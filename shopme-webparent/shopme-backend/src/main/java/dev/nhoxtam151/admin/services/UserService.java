@@ -1,16 +1,12 @@
 package dev.nhoxtam151.admin.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.nhoxtam151.admin.aop.annotations.LimitToken;
 import dev.nhoxtam151.admin.exceptions.UserNotFoundException;
-import dev.nhoxtam151.admin.models.SirvBody;
 import dev.nhoxtam151.admin.models.SirvUrl;
 import dev.nhoxtam151.admin.repositories.RoleRepository;
 import dev.nhoxtam151.admin.repositories.UserRepository;
-import dev.nhoxtam151.admin.utils.ImageUtils;
 import dev.nhoxtam151.admin.utils.SirvImageUtils;
+import dev.nhoxtam151.admin.utils.TokenImageUtils;
 import dev.nhoxtam151.shopmecommon.models.Role;
 import dev.nhoxtam151.shopmecommon.models.User;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +19,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,29 +41,21 @@ public class UserService implements ApplicationContextAware {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RestTemplate restTemplate;
-    private final SirvBody sirvBody;
-    private final SirvUrl sirvUrl;
-    private final ObjectMapper objectMapper;
     private final RoleRepository roleRepository;
-    private final ImageUtils imageUtils;
+    private final TokenImageUtils imageUtils;
+    private final SirvUrl sirvUrl;
     private ApplicationContext applicationContext;
 
     public UserService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        RestTemplate restTemplate,
-                       SirvBody sirvBody,
                        SirvUrl sirvUrl,
-                       ObjectMapper objectMapper, RoleRepository roleRepository, @Qualifier("sirvImageUtils") ImageUtils imageUtils, SirvImageUtils sirvImageUtils) {
+                       ObjectMapper objectMapper, RoleRepository roleRepository, @Qualifier("sirvImageUtils") TokenImageUtils imageUtils, SirvImageUtils sirvImageUtils, SirvUrl sirvUrl1) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.restTemplate = restTemplate;
-        this.sirvBody = sirvBody;
-        this.sirvUrl = sirvUrl;
-        this.objectMapper = objectMapper;
-
         this.roleRepository = roleRepository;
         this.imageUtils = imageUtils;
+        this.sirvUrl = sirvUrl1;
     }
 
     public Page<User> listFirstPage() {
@@ -87,7 +73,7 @@ public class UserService implements ApplicationContextAware {
         }
 
         if (!fileImage.isEmpty() && user.getPhoto() == null) {
-            user.setPhoto(user.getId() + "_avatar");
+            user.setPhoto(user.getFullName() + "_avatar");
             uploadImage(user.getPhoto(), fileImage.getBytes());
         }
         if (user.getId() == null) { //create new user case
@@ -147,59 +133,24 @@ public class UserService implements ApplicationContextAware {
         userRepository.updateEnabledStatus(id, enabled);
     }
 
-    @LimitToken
-    public String retrieveToken() {
-        HttpHeaders tokenHeader = new HttpHeaders();
-        tokenHeader.setContentType(MediaType.APPLICATION_JSON);
-        String uriTemplate = UriComponentsBuilder.fromUriString(sirvUrl.getUrl().get("token"))
-                .toUriString();
-        HttpEntity<SirvBody> httpEntity = new HttpEntity<>(sirvBody, tokenHeader);
-        String exchange = restTemplate.postForObject(uriTemplate, httpEntity, String.class);
-        JsonNode root = null;
-        try {
-            root = objectMapper.readTree(exchange);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        return root.path("token").asText();
-    }
-
-
     public InputStream retrieveImage(String imageName) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_JPEG);
-        UserService userService = applicationContext.getBean(UserService.class);
-        String token = userService.retrieveToken();
-//        try {
-//            headers.set("Authorization", "Bearer " + token);
-//            HttpResponse<String> response = Unirest.get(sirvUrl.getUrl().get("get.user") + imageName)
-//                    .header("content-type", "application/json")
-//                    .header("authorization", "Bearer " + token)
-//                    .asString();
-//            return response.getRawBody();
-//        } catch (UnirestException e) {
-//            log.error("UserService.retrieveImage: {}", e.getMessage());
-//            return null;
-//        }
+        return retrieveImageSirv(imageName);
+    }
+
+    public InputStream retrieveImageSirv(String imageName) {
         String url = sirvUrl.getUrl().get("get.user") + imageName;
-        return imageUtils.retrieveImage(url, token);
+        return imageUtils.retrieveImage(url);
     }
 
     public void uploadImage(String imageName, byte[] image) {
-        String token = applicationContext.getBean(UserService.class).retrieveToken();
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        try {
-//            HttpResponse<String> response = Unirest.post(sirvUrl.getUrl().get("post.user") + imageName)
-//                    .header("content-type", "application/json")
-//                    .header("authorization", "Bearer " + token)
-//                    .body(image)
-//                    .asString();
-//        } catch (UnirestException e) {
-//            log.error("UserService.uploadImage: {}", e.getMessage());
-//        }
+        uploadImageSirv(imageName, image);
+    }
+
+    public void uploadImageSirv(String imageName, byte[] image) {
         String url = sirvUrl.getUrl().get("post.user") + imageName;
-        imageUtils.uploadImage(url, token, image);
+        imageUtils.uploadImage(url, image);
     }
 
     @Override

@@ -51,12 +51,10 @@
         <tr th:each="category : ${categories}">
             <td class="hideable-column">[[${category.id}]]</td>
             <td class="text-center">
-<!--                <img th:if="${user.photo == 'default_avatar.jpg'}"-->
-<!--                     th:src="@{'https://kutamhahaha6915012002-sgu.sirv.com/Shopme/avatar/default_avatar.jpg?w=80&h=80&v=' + ${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}}">-->
-<!--                <img  th:if="${user.photo != null and not #strings.contains(user.photo, 'googleusercontent.com')}"-->
-<!--                      th:src="@{'https://kutamhahaha6915012002-sgu.sirv.com/Shopme/avatar/'+ ${user.photo} +'?w=80&h=80&v=' + ${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}}">-->
-<!--                <img th:if="${#strings.contains(user.photo,'googleusercontent.com')}"-->
-<!--                     th:src="${user.photo}">-->
+                <img th:if="${category.photo == null}"
+                     th:src="@{'https://kutamhahaha6915012002-sgu.sirv.com/Shopme/categories/laptop%20computers.png?w=80&h=80&v=' + ${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}}">
+                <img th:if="${category.photo != null and not #strings.contains(category.photo,'googleusercontent.com')}"
+                     th:src="@{'https://kutamhahaha6915012002-sgu.sirv.com/Shopme/categories/'+ ${category.photo} +'?w=80&h=80&v=' + ${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}}">
             </td>
             <td class="hideable-column">[[${category.name}]]</td>
             <td>[[${category.alias}]]</td>
@@ -80,11 +78,10 @@
 <div class="less-details">
     <div th:each="category : ${categories}" class="row m-1">
         <div class="col-4">
-<!--            <img th:if="${user.photo == 'default_avatar.jpg'}"-->
-<!--                 th:src="@{'https://kutamhahaha6915012002-sgu.sirv.com/Shopme/avatar/default_avatar.jpg?w=80&h=80&v=' + ${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}}">-->
-<!--            <img th:if="${user.photo != null and not #strings.contains(user.photo,'googleusercontent.com')}"-->
-<!--                 th:src="@{'https://kutamhahaha6915012002-sgu.sirv.com/Shopme/avatar/'+ ${user.photo} +'?w=80&h=80&v=' + ${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}}">-->
-<!--            <img th:if="${#strings.contains(user.photo,'googleusercontent.com')}" th:src="${user.photo}">-->
+            <img th:if="${category.photo == null}"
+                 th:src="@{'https://kutamhahaha6915012002-sgu.sirv.com/Shopme/categories/laptop%20computers.png?w=80&h=80&v=' + ${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}}">
+            <img th:if="${category.photo != null and not #strings.contains(category.photo,'googleusercontent.com')}"
+                 th:src="@{'https://kutamhahaha6915012002-sgu.sirv.com/Shopme/categories/'+ ${category.photo} +'?w=80&h=80&v=' + ${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}}">
         </div>
         <div class="col-8">
             <div>[[${category.name}]]</div>
