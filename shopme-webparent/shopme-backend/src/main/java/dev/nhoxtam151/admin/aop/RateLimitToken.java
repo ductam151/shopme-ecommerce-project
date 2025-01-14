@@ -30,7 +30,7 @@ public class RateLimitToken {
             token = proceedingJoinPoint.proceed().toString();
             now = current;
         }
-        logger.info("Token from RateLimitToken{}", token);
+        logger.info("Token from RateLimitToken: {}", token);
         return token;
     }
 }

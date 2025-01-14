@@ -23,7 +23,7 @@
             <div class="form-group row">
                 <label class="col-sm-4 col-form-label">Alias:</label>
                 <input class="col-sm-8" th:field="*{alias}"
-                       minlength="6">
+                       minlength="3">
                 <span th:if="${aliasError != null}" th:text="${aliasError}" class="text-danger font-weight-bold">
                 ></span>
             </div>
@@ -102,7 +102,7 @@
     if (photoName == '') {
         photoName = 'default_category.jpg';
     }
-    url = "https://kutamhahaha6915012002-sgu.sirv.com/Shopme/avatar/" + photoName + `?w=150&h=150&v=` + Date.now();
+    url = "https://kutamhahaha6915012002-sgu.sirv.com/Shopme/category/" + photoName + `?w=150&h=150&v=` + Date.now();
     $('#categoryPhoto').attr('src', url);
     $('#categoryPhoto').attr('width', 162);
     $('#categoryPhoto').attr('height', 180);
